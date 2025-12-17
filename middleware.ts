@@ -1,7 +1,21 @@
 import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
 export default auth((req) => {
-  // Basic middleware - will be expanded later
+  const { pathname } = req.nextUrl;
+  const isLoggedIn = !!req.auth;
+
+  const isAuthPage = pathname.startsWith("/auth");
+
+  if (!isLoggedIn && !isAuthPage) {
+    return NextResponse.redirect(new URL("/auth/signin", req.url));
+  }
+
+  if (isLoggedIn && isAuthPage) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
