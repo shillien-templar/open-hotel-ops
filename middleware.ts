@@ -6,12 +6,13 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   const isAuthPage = pathname.startsWith("/auth");
+  const isSetupPage = pathname.startsWith("/setup");
 
-  if (!isLoggedIn && !isAuthPage) {
+  if (!isLoggedIn && !isAuthPage && !isSetupPage) {
     return NextResponse.redirect(new URL("/auth/signin", req.url));
   }
 
-  if (isLoggedIn && isAuthPage) {
+  if (isLoggedIn && (isAuthPage || isSetupPage)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 

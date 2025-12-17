@@ -40,14 +40,16 @@ An open-source hotel management software built with Next.js for managing interna
 
 2. **Set up environment variables:**
    - Copy `.env.example` to `.env`
-   - Add your Neon PostgreSQL connection string to `DATABASE_URL`
+   - Add your PostgreSQL connection string to `DATABASE_URL`
    - Generate an auth secret: `openssl rand -base64 32`
    - Add the generated secret to `AUTH_SECRET`
+   - Generate a setup secret: `openssl rand -base64 32`
+   - Add the generated setup secret to `SETUP_SECRET`
 
 3. **Initialize the database:**
    ```bash
    npx prisma generate
-   npx prisma db push
+   npx prisma migrate dev
    ```
 
 4. **Run the development server:**
@@ -55,13 +57,26 @@ An open-source hotel management software built with Next.js for managing interna
    npm run dev
    ```
 
-5. **Open [http://localhost:3000](http://localhost:3000)**
+5. **Initial Setup:**
+   - Navigate to `http://localhost:3000/setup`
+   - Enter your `SETUP_SECRET`
+   - Create your super admin account
+   - **IMPORTANT:** Remove `SETUP_SECRET` from `.env` after creating the super admin
+
+6. **Login:**
+   - Navigate to `http://localhost:3000/auth/signin`
+   - Login with your super admin credentials
 
 ## Database Schema
 
 ### User
-- Roles: ADMIN, FRONT_DESK, HOUSEKEEPING
+- Roles: SUPER_ADMIN, ADMIN, FRONT_DESK, HOUSEKEEPING
 - Email/password authentication
+- Role hierarchy:
+  - Super Admin: Can create Admin users (only one allowed)
+  - Admin: Can create Front Desk and Housekeeping users
+  - Front Desk: Hotel reception staff
+  - Housekeeping: Cleaning and maintenance staff
 
 ### Customer
 - Basic contact information
