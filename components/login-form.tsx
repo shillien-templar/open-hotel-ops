@@ -68,61 +68,59 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          <CardHeader>
+              <CardTitle>Login to your account</CardTitle>
+              <CardDescription>
+                  Enter your email below to login to your account
+              </CardDescription>
+          </CardHeader>
+          <CardContent>
+              {error && (
+                  <Alert variant="destructive" className="mb-4">
+                      <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+              )}
 
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  {...form.register("email")}
-                  disabled={isLoading}
-                />
-                {form.formState.errors.email && (
-                  <p className="text-sm text-red-500">
-                    {form.formState.errors.email.message}
-                  </p>
-                )}
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
-                  id="password"
-                  type="password"
-                  {...form.register("password")}
-                  disabled={isLoading}
-                />
-                {form.formState.errors.password && (
-                  <p className="text-sm text-red-500">
-                    {form.formState.errors.password.message}
-                  </p>
-                )}
-              </Field>
-              <Field>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
-                </Button>
-              </Field>
-            </FieldGroup>
-          </form>
-        </CardContent>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <FieldGroup>
+                      <Field>
+                          <FieldLabel htmlFor="email">Email</FieldLabel>
+                          <Input
+                              id="email"
+                              type="email"
+                              placeholder="m@example.com"
+                              {...form.register("email")}
+                              disabled={isLoading}
+                          />
+                          {form.formState.errors.email && (
+                              <p className="text-sm text-red-500">
+                                  {form.formState.errors.email.message}
+                              </p>
+                          )}
+                      </Field>
+                      <Field>
+                          <FieldLabel htmlFor="password">Password</FieldLabel>
+                          <Input
+                              id="password"
+                              type="password"
+                              {...form.register("password")}
+                              disabled={isLoading}
+                          />
+                          {form.formState.errors.password && (
+                              <p className="text-sm text-red-500">
+                                  {form.formState.errors.password.message}
+                              </p>
+                          )}
+                      </Field>
+                      <Field>
+                          <Button type="submit" className="w-full" disabled={isLoading}>
+                              {isLoading ? "Logging in..." : "Login"}
+                          </Button>
+                      </Field>
+                  </FieldGroup>
+              </form>
+          </CardContent>
       </Card>
-    </div>
   );
 }
