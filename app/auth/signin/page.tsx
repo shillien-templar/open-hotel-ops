@@ -1,9 +1,12 @@
 import { LoginForm } from "@/components/login-form";
+import Container from "@/components/container";
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <LoginForm />
-    </div>
+    <section className="my-12">
+        <Container size="xxs">
+            <LoginForm />
+        </Container>
+    </section>
   );
 }
