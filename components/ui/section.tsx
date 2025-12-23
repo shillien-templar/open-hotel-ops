@@ -41,7 +41,7 @@ export function Section({
   const spacingClass = spacingClasses[spacingType][spacing];
 
   return (
-    <section className={cn(spacingClass, className)}>
+    <section className={cn('w-full', spacingClass, className)}>
       {children}
     </section>
   );
