@@ -16,7 +16,7 @@ export function getFormSchema(action: string): z.ZodType | null {
 export async function executeFormAction(
   action: string,
   data: unknown
-): Promise<{ status: "success" | "error"; data?: unknown; errors?: Record<string, string> }> {
+): Promise<{ status: "success" | "error"; data?: unknown; errors?: Record<string, string>; alert?: any }> {
   const formConfig = formRegistry[action as keyof typeof formRegistry];
 
   if (!formConfig) {

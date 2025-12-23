@@ -12,7 +12,15 @@ export async function POST(
   const schema = getFormSchema(action);
   if (!schema) {
     return NextResponse.json(
-      { status: "error", errors: { _form: "Invalid form action" } },
+      {
+        status: "error",
+        errors: { _form: "Invalid form action" },
+        alert: {
+          variant: "destructive",
+          title: "Invalid form action",
+          description: "The form action you requested does not exist.",
+        }
+      },
       { status: 400 }
     );
   }
@@ -24,7 +32,15 @@ export async function POST(
   const validation = validateFormData(schema, formData);
   if (validation.status === "fail") {
     return NextResponse.json(
-      { status: "error", errors: validation.errors },
+      {
+        status: "error",
+        errors: validation.errors,
+        alert: {
+          variant: "destructive",
+          title: "Validation failed",
+          description: "Please check the form fields and try again.",
+        }
+      },
       { status: 400 }
     );
   }
