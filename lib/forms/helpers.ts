@@ -1,3 +1,6 @@
+import { z } from 'zod'
+import {FormFields} from "@/types/forms";
+
 /**
  * Converts FormData to a plain object
  */
@@ -42,4 +45,23 @@ export function objectToFormData(obj: Record<string, unknown>): FormData {
   });
 
   return formData;
+}
+
+/**
+ * Builds a Zod schema from field definitions
+ *
+ * @param fields - Feature field definitions
+ * @returns Zod object schema
+ *
+ * @example
+ * const schema = buildSchema(IMAGE_GEN_FIELDS)
+ */
+export function buildSchema<T extends FormFields>(fields: T) {
+  const schemaShape: Record<string, z.ZodTypeAny> = {}
+
+  for (const [key, field] of Object.entries(fields)) {
+    schemaShape[key] = field.schema
+  }
+
+  return z.object(schemaShape)
 }

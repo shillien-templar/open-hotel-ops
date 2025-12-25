@@ -1,34 +1,11 @@
-import type { SetupFormData } from "./schema";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import type { Alert } from "@/lib/types/alert";
 
-export async function action(data: SetupFormData) {
+export async function action(data: unknown) {
+  const formData = data as Record<string, unknown>;
   try {
-    const setupSecret = process.env.SETUP_SECRET;
-
-    if (!setupSecret) {
-      return {
-        status: "error" as const,
-        alert: {
-          variant: "destructive",
-          title: "Setup secret not configured",
-          description: "SETUP_SECRET environment variable is not set.",
-        } satisfies Alert,
-      };
-    }
-
-    if (data.secret !== setupSecret) {
-      return {
-        status: "error" as const,
-        alert: {
-          variant: "destructive",
-          title: "Invalid setup secret",
-          description: "The setup secret you provided is incorrect.",
-        } satisfies Alert,
-      };
-    }
-
+    // Check if super admin already exists
     const superAdminExists = await prisma.user.findFirst({
       where: {
         role: "SUPER_ADMIN",
@@ -46,11 +23,12 @@ export async function action(data: SetupFormData) {
       };
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    // Hash password and create user
+    const hashedPassword = await bcrypt.hash(formData.password as string, 10);
 
     await prisma.user.create({
       data: {
-        email: data.email,
+        email: formData.email as string,
         password: hashedPassword,
         role: "SUPER_ADMIN",
       },

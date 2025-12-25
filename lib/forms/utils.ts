@@ -1,39 +1,63 @@
-import { z } from "zod";
 import { formDataToObject, objectToFormData } from "./helpers";
-import { formRegistry } from "./registry";
+import { getFormConfig } from "./registry";
+import { validateSchema, validateData } from "./validation";
 
 /**
- * Get schema by action name
+ * Process Form
+ * Universal form handler that orchestrates validation and action execution
+ *
+ * Flow:
+ * 1. Get form config by ID
+ * 2. Validate schema (Type 1)
+ * 3. If schema valid, validate data (Type 2)
+ * 4. If both valid, execute action
+ *
+ * @param formId - Form identifier (e.g., "setup", "create-user")
+ * @param formData - Raw form data (FormData or object)
+ * @returns Action result or validation error
  */
-export function getFormSchema(action: string): z.ZodType | null {
-  const formConfig = formRegistry[action as keyof typeof formRegistry];
-  return formConfig?.schema ?? null;
-}
+export async function processForm(
+  formId: string,
+  formData: FormData | Record<string, unknown>
+) {
+  // Get form config
+  const config = getFormConfig(formId);
 
-/**
- * Execute form action by name
- */
-export async function executeFormAction(
-  action: string,
-  data: unknown
-): Promise<{ status: "success" | "error"; data?: unknown; errors?: Record<string, string>; alert?: any }> {
-  const formConfig = formRegistry[action as keyof typeof formRegistry];
-
-  if (!formConfig) {
+  if (!config) {
     return {
-      status: "error",
-      errors: { _form: "Invalid action" },
+      status: 'fail',
+      alert: {
+        variant: 'destructive',
+        title: 'Invalid Form',
+        description: 'The form you are trying to submit does not exist.',
+      },
     };
   }
 
-  return formConfig.action(data);
+  // Convert FormData to object if needed
+  const data = formData instanceof FormData ? formDataToObject(formData) : formData;
+
+  // Step 1: Validate schema (Type 1)
+  const schemaValidation = await validateSchema(config.schema, data);
+  if (schemaValidation.status === 'fail') {
+    return schemaValidation;
+  }
+
+  // Step 2: Validate data (Type 2)
+  const dataValidation = await validateData(config.fields, data);
+  if (dataValidation.status === 'fail') {
+    return dataValidation;
+  }
+
+  // Step 3: Execute action (business logic)
+  return await config.action(data);
 }
 
 /**
  * Client-side form submission helper
  */
-export async function submitForm(action: string, formData: FormData) {
-  const response = await fetch(`/api/forms/${action}`, {
+export async function submitForm(formId: string, formData: FormData) {
+  const response = await fetch(`/api/forms/${formId}`, {
     method: "POST",
     body: formData,
   });
