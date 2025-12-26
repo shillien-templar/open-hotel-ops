@@ -8,19 +8,6 @@ export const fields = {
     placeholder: "Enter setup secret",
     defaultValue: "",
     schema: z.string().min(1, "Setup secret is required"),
-    dataValidation: async (value: unknown) => {
-      const setupSecret = process.env.SETUP_SECRET;
-
-      if (!setupSecret) {
-        return "Setup secret not configured on server";
-      }
-
-      if (value !== setupSecret) {
-        return "Invalid setup secret";
-      }
-
-      return null; // Valid
-    },
   },
 
   email: {
@@ -45,11 +32,5 @@ export const fields = {
     placeholder: "Confirm password",
     defaultValue: "",
     schema: z.string(),
-    dataValidation: async (value: unknown, formData: Record<string, unknown>) => {
-      if (value !== formData.password) {
-        return "Passwords don't match";
-      }
-      return null; // Valid
-    },
   },
 } as const satisfies FormFields;

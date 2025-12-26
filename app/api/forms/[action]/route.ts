@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { processForm } from "@/lib/forms/utils";
+import { processForm } from "@/lib/forms/core/process-form";
 
 export async function POST(
   request: NextRequest,

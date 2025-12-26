@@ -1,9 +1,40 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import type { Alert } from "@/lib/types/alert";
+import type { FieldDataValidation } from "@/types/forms";
 
+/**
+ * Server-side data validation for setup form
+ */
+export const dataValidation: Record<string, FieldDataValidation> = {
+  secret: async (value: unknown) => {
+    const setupSecret = process.env.SETUP_SECRET;
+
+    if (!setupSecret) {
+      return "Setup secret not configured on server";
+    }
+
+    if (value !== setupSecret) {
+      return "Invalid setup secret";
+    }
+
+    return null;
+  },
+
+  confirmPassword: async (value: unknown, formData: Record<string, unknown>) => {
+    if (value !== formData.password) {
+      return "Passwords don't match";
+    }
+    return null;
+  },
+};
+
+/**
+ * Setup form action
+ */
 export async function action(data: unknown) {
   const formData = data as Record<string, unknown>;
+
   try {
     // Check if super admin already exists
     const superAdminExists = await prisma.user.findFirst({

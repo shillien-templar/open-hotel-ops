@@ -18,7 +18,7 @@ export type FieldType =
 /**
  * Data Validation Function
  * Type 2 validation - validates field value against actual data (secrets, DB, etc.)
- * Runs server-side only
+ * Runs server-side only - lives in server-registry, NOT in field config
  */
 export type FieldDataValidation<T = unknown> = (
   value: T,
@@ -28,6 +28,7 @@ export type FieldDataValidation<T = unknown> = (
 /**
  * Base Field Configuration
  * Common properties for all field types
+ * NOTE: No dataValidation here - that lives in server-registry
  */
 export interface BaseFieldConfig {
   type: FieldType
@@ -37,7 +38,6 @@ export interface BaseFieldConfig {
   schema: z.ZodTypeAny
   placeholder?: string
   className?: string
-  dataValidation?: FieldDataValidation  // Optional Type 2 validation
 }
 
 /**
@@ -145,12 +145,12 @@ export type ValidationResponse =
     }
 
 /**
- * Form Config
- * Complete configuration for a form
+ * Form Config (Client-Safe)
+ * Configuration for a form that can be safely imported on client
+ * Actions and dataValidation live in server-registry
  */
 export interface FormConfig<T = unknown> {
   fields: FormFields
   schema: z.ZodType<T>
-  action: (data: T) => Promise<unknown>
 }
 

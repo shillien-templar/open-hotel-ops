@@ -1,5 +1,5 @@
-import { config as createUserConfig } from "./create-user";
-import { config as setupConfig } from "./setup";
+import { config as createUserConfig } from "../definitions/create-user";
+import { config as setupConfig } from "../definitions/setup";
 import type { FormConfig } from "@/types/forms";
 
 export const formRegistry = {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { formDataToObject } from "./helpers";
-import type { FormFields, ValidationResponse } from "@/types/forms";
+import type { ValidationResponse, FieldDataValidation } from "@/types/forms";
 
 export function validateFormData<T extends z.ZodType>(
   schema: T,
@@ -72,24 +72,22 @@ export async function validateSchema(
 /**
  * Validate Data (Type 2 Validation)
  * Validates form data against actual values (secrets, DB, etc.)
- * Runs field-level dataValidation functions
+ * Runs field-level dataValidation functions from server registry
  */
 export async function validateData(
-  fields: FormFields,
+  dataValidation: Record<string, FieldDataValidation>,
   formData: Record<string, unknown>
 ): Promise<ValidationResponse> {
   try {
     const fieldErrors: Record<string, string> = {}
 
     // Run all field-level data validations
-    for (const [fieldName, fieldConfig] of Object.entries(fields)) {
-      if (fieldConfig.dataValidation) {
-        const fieldValue = formData[fieldName]
-        const errorMessage = await fieldConfig.dataValidation(fieldValue, formData)
+    for (const [fieldName, validationFn] of Object.entries(dataValidation)) {
+      const fieldValue = formData[fieldName]
+      const errorMessage = await validationFn(fieldValue, formData)
 
-        if (errorMessage) {
-          fieldErrors[fieldName] = errorMessage
-        }
+      if (errorMessage) {
+        fieldErrors[fieldName] = errorMessage
       }
     }
 

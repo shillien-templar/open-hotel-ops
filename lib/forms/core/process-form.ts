@@ -1,5 +1,6 @@
-import { formDataToObject, objectToFormData } from "./helpers";
+import { formDataToObject } from "./helpers";
 import { getFormConfig } from "./registry";
+import { getServerConfig } from "./server-registry";
 import { validateSchema, validateData } from "./validation";
 
 /**
@@ -8,9 +9,10 @@ import { validateSchema, validateData } from "./validation";
  *
  * Flow:
  * 1. Get form config by ID
- * 2. Validate schema (Type 1)
- * 3. If schema valid, validate data (Type 2)
- * 4. If both valid, execute action
+ * 2. Get server config by ID (enforces all forms have server registry entry)
+ * 3. Validate schema (Type 1)
+ * 4. If schema valid, validate data (Type 2) using server registry validators
+ * 5. If both valid, execute action
  *
  * @param formId - Form identifier (e.g., "setup", "create-user")
  * @param formData - Raw form data (FormData or object)
@@ -34,6 +36,9 @@ export async function processForm(
     };
   }
 
+  // Get server config (throws if not found - enforces proper configuration)
+  const serverConfig = getServerConfig(formId);
+
   // Convert FormData to object if needed
   const data = formData instanceof FormData ? formDataToObject(formData) : formData;
 
@@ -43,26 +48,12 @@ export async function processForm(
     return schemaValidation;
   }
 
-  // Step 2: Validate data (Type 2)
-  const dataValidation = await validateData(config.fields, data);
+  // Step 2: Validate data (Type 2) using server registry
+  const dataValidation = await validateData(serverConfig.dataValidation, data);
   if (dataValidation.status === 'fail') {
     return dataValidation;
   }
 
-  // Step 3: Execute action (business logic)
-  return await config.action(data);
+  // Step 3: Execute action (business logic) from server registry
+  return await serverConfig.action(data);
 }
-
-/**
- * Client-side form submission helper
- */
-export async function submitForm(formId: string, formData: FormData) {
-  const response = await fetch(`/api/forms/${formId}`, {
-    method: "POST",
-    body: formData,
-  });
-
-  return response.json();
-}
-
-export { objectToFormData, formDataToObject };
