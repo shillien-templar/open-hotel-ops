@@ -19,7 +19,7 @@ export const fields = {
   },
 
   password: {
-    type: "text",
+    type: "password",
     label: "Password",
     placeholder: "Enter password",
     defaultValue: "",
@@ -27,7 +27,7 @@ export const fields = {
   },
 
   confirmPassword: {
-    type: "text",
+    type: "password",
     label: "Confirm Password",
     placeholder: "Confirm password",
     defaultValue: "",

@@ -65,6 +65,18 @@ function renderFieldControl(
                 />
             )
 
+        case 'password':
+            return (
+                <Input
+                    {...field}
+                    value={field.value as string}
+                    id={id}
+                    aria-invalid={fieldState.invalid}
+                    type="password"
+                    placeholder={fieldConfig.placeholder}
+                />
+            )
+
         case 'textarea':
             return (
                 <Textarea

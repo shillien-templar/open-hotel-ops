@@ -75,6 +75,16 @@ export function FormRenderer({
         setAlert(result.alert);
       }
 
+      // Set field errors from server validation
+      if (result.fieldErrors) {
+        Object.entries(result.fieldErrors).forEach(([fieldName, errorMessage]) => {
+          form.setError(fieldName, {
+            type: "server",
+            message: errorMessage as string,
+          });
+        });
+      }
+
       if (result.status === "success") {
         form.reset();
         onSuccess?.(result);
