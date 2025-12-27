@@ -40,7 +40,7 @@ export default async function SetupPage() {
                 </AlertDescription>
               </Alert>
               <Button asChild className="w-full">
-                <Link href="/signin">Go to Sign In</Link>
+                <Link href="/auth/signin">Go to Sign In</Link>
               </Button>
             </div>
           ) : (
