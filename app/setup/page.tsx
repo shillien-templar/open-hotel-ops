@@ -7,6 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function SetupPage() {
@@ -30,12 +32,17 @@ export default async function SetupPage() {
         </CardHeader>
         <CardContent>
           {superAdminExists ? (
-            <Alert variant="info">
-              <AlertTitle>Setup Already Complete</AlertTitle>
-              <AlertDescription>
-                A super admin account has already been created. Please remove the SETUP_SECRET environment variable and restart the server to enable login.
-              </AlertDescription>
-            </Alert>
+            <div className="space-y-4">
+              <Alert variant="info">
+                <AlertTitle>Setup Already Complete</AlertTitle>
+                <AlertDescription>
+                  A super admin account has already been created. Please remove the SETUP_SECRET environment variable and restart the server to enable login.
+                </AlertDescription>
+              </Alert>
+              <Button asChild className="w-full">
+                <Link href="/signin">Go to Sign In</Link>
+              </Button>
+            </div>
           ) : (
             <FormRenderer
               formId="setup"
