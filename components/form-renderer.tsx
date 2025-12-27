@@ -25,6 +25,7 @@ export function FormRenderer({
   submitButtonText = "Submit"
 }: FormRendererProps) {
   const [alert, setAlert] = useState<Alert | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Get form config from client-safe registry
   const config = getFormConfig(formId);
@@ -86,6 +87,7 @@ export function FormRenderer({
       }
 
       if (result.status === "success") {
+        setIsSuccess(true);
         form.reset();
         onSuccess?.(result);
       } else {
@@ -114,17 +116,22 @@ export function FormRenderer({
         </AlertComponent>
       )}
 
-      {/* Form-specific fields */}
-      <FormFieldsComponent form={form} />
+      {/* Only show form fields and submit button if not successful */}
+      {!isSuccess && (
+        <>
+          {/* Form-specific fields */}
+          <FormFieldsComponent form={form} />
 
-      {/* Submit Button */}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={form.formState.isSubmitting}
-      >
-        {form.formState.isSubmitting ? "Submitting..." : submitButtonText}
-      </Button>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "Submitting..." : submitButtonText}
+          </Button>
+        </>
+      )}
     </form>
   );
 }

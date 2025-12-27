@@ -6,22 +6,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { prisma } from "@/lib/prisma";
 
-export default function SetupPage() {
+export default async function SetupPage() {
+  // Check if super admin already exists
+  const superAdminExists = await prisma.user.findFirst({
+    where: {
+      role: "SUPER_ADMIN",
+    },
+  });
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Initial Setup</CardTitle>
           <CardDescription>
-            Create your super admin account to get started
+            {superAdminExists
+              ? "Setup already completed"
+              : "Create your super admin account to get started"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <FormRenderer
-            formId="setup"
-            submitButtonText="Create Super Admin Account"
-          />
+          {superAdminExists ? (
+            <Alert variant="info">
+              <AlertTitle>Setup Already Complete</AlertTitle>
+              <AlertDescription>
+                A super admin account has already been created. Please remove the SETUP_SECRET environment variable and restart the server to enable login.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <FormRenderer
+              formId="setup"
+              submitButtonText="Create Super Admin Account"
+            />
+          )}
         </CardContent>
       </Card>
     </div>
