@@ -39,21 +39,18 @@ export async function processForm(
   // Get server config (throws if not found - enforces proper configuration)
   const serverConfig = getServerConfig(formId);
 
-  // Convert FormData to object if needed
-  const data = formData instanceof FormData ? formDataToObject(formData) : formData;
-
   // Step 1: Validate schema (Type 1)
-  const schemaValidation = await validateSchema(config.schema, data);
+  const schemaValidation = await validateSchema(config.schema, formData);
   if (schemaValidation.status === 'fail') {
     return schemaValidation;
   }
 
   // Step 2: Validate data (Type 2) using server registry
-  const dataValidation = await validateData(serverConfig.dataValidation, data);
+  const dataValidation = await validateData(serverConfig.dataValidation, formData);
   if (dataValidation.status === 'fail') {
     return dataValidation;
   }
 
   // Step 3: Execute action (business logic) from server registry
-  return await serverConfig.action(data);
+  return await serverConfig.action(formData);
 }

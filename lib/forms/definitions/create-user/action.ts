@@ -1,16 +1,18 @@
-import type { CreateUserFormData } from "./schema";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-helpers";
 import bcrypt from "bcryptjs";
+import { formDataToObject } from "@/lib/forms/core/helpers";
 
-export async function action(data: CreateUserFormData) {
+export async function action(formData: FormData | Record<string, unknown>) {
+  const data = formData instanceof FormData ? formDataToObject(formData) : formData;
+
   try {
     // Require authentication
     await requireAuth();
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email: data.email as string },
     });
 
     if (existingUser) {
@@ -27,8 +29,8 @@ export async function action(data: CreateUserFormData) {
     // Create the user
     const user = await prisma.user.create({
       data: {
-        email: data.email,
-        role: data.role,
+        email: data.email as string,
+        role: data.role as "ADMIN" | "FRONT_DESK" | "HOUSEKEEPING",
         password: hashedPassword,
       },
       select: {

@@ -9,7 +9,7 @@ export function validateFormData<T extends z.ZodType>(
   const obj = data instanceof FormData ? formDataToObject(data) : data;
   const result = schema.safeParse(obj);
 
-  if (result.status === "success") {
+  if (result.success) {
     return { status: "success", data: result.data };
   }
 
@@ -28,16 +28,17 @@ export function validateFormData<T extends z.ZodType>(
  */
 export async function validateSchema(
   schema: z.ZodTypeAny,
-  formData: unknown
+  formData: FormData | Record<string, unknown>
 ): Promise<ValidationResponse> {
   try {
-    const result = await schema.safeParseAsync(formData)
+    const data = formData instanceof FormData ? formDataToObject(formData) : formData;
+    const result = await schema.safeParseAsync(data)
 
     if (!result.success) {
       // Convert Zod errors to field errors
       const fieldErrors: Record<string, string> = {}
 
-      result.error.errors.forEach((error) => {
+      result.error.issues.forEach((error) => {
         const fieldName = error.path.join('.')
         if (fieldName) {
           fieldErrors[fieldName] = error.message
@@ -76,15 +77,16 @@ export async function validateSchema(
  */
 export async function validateData(
   dataValidation: Record<string, FieldDataValidation>,
-  formData: Record<string, unknown>
+  formData: FormData | Record<string, unknown>
 ): Promise<ValidationResponse> {
   try {
+    const data = formData instanceof FormData ? formDataToObject(formData) : formData;
     const fieldErrors: Record<string, string> = {}
 
     // Run all field-level data validations
     for (const [fieldName, validationFn] of Object.entries(dataValidation)) {
-      const fieldValue = formData[fieldName]
-      const errorMessage = await validationFn(fieldValue, formData)
+      const fieldValue = data[fieldName]
+      const errorMessage = await validationFn(fieldValue, data)
 
       if (errorMessage) {
         fieldErrors[fieldName] = errorMessage

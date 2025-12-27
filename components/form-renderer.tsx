@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { z } from "zod";
 import { getFormConfig } from "@/lib/forms/core/registry";
 import { objectToFormData } from "@/lib/forms/core/helpers";
 import { formComponentRegistry } from "@/components/forms/registry";
@@ -54,7 +55,7 @@ export function FormRenderer({
   }, {} as Record<string, unknown>);
 
   const form = useForm({
-    resolver: zodResolver(config.schema),
+    resolver: zodResolver(config.schema as z.ZodObject<z.ZodRawShape>),
     defaultValues,
   });
 

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import type { Alert } from "@/lib/types/alert";
 import type { FieldDataValidation } from "@/types/forms";
+import { formDataToObject } from "@/lib/forms/core/helpers";
 
 /**
  * Server-side data validation for setup form
@@ -32,8 +33,8 @@ export const dataValidation: Record<string, FieldDataValidation> = {
 /**
  * Setup form action
  */
-export async function action(data: unknown) {
-  const formData = data as Record<string, unknown>;
+export async function action(formData: FormData | Record<string, unknown>) {
+  const data = formData instanceof FormData ? formDataToObject(formData) : formData;
 
   try {
     // Check if super admin already exists
@@ -55,11 +56,11 @@ export async function action(data: unknown) {
     }
 
     // Hash password and create user
-    const hashedPassword = await bcrypt.hash(formData.password as string, 10);
+    const hashedPassword = await bcrypt.hash(data.password as string, 10);
 
     await prisma.user.create({
       data: {
-        email: formData.email as string,
+        email: data.email as string,
         password: hashedPassword,
         role: "SUPER_ADMIN",
       },
