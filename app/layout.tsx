@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import "./globals.css";
 import {ThemeProvider} from "next-themes";
+import {Toaster} from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
     title: "Open Hotel Ops",
@@ -26,6 +27,7 @@ export default function RootLayout({
             <div className="min-h-screen flex flex-col">
                 {children}
             </div>
+            <Toaster />
         </ThemeProvider>
         </body>
         </html>

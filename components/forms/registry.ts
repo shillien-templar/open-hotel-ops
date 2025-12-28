@@ -1,4 +1,5 @@
 import { SetupFormFields } from "./setup-form";
+import { CreateUserFormFields } from "./create-user-form";
 import type { UseFormReturn } from "react-hook-form";
 
 /**
@@ -10,5 +11,6 @@ export const formComponentRegistry: Record<
   React.ComponentType<{ form: UseFormReturn<any> }>
 > = {
   setup: SetupFormFields,
+  "create-user": CreateUserFormFields,
   // Add more form field components here as they are created
 };

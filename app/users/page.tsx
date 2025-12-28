@@ -1,10 +1,12 @@
-import { requireAuth } from "@/lib/auth-helpers";
+import { requireMinRole } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
-import { UsersTable } from "@/components/users/users-table";
+import { DataTable } from "@/components/users/data-table";
+import { columns } from "@/components/users/columns";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
+import { UserRole } from "@/lib/constants/roles";
 
 export default async function UsersPage() {
-  await requireAuth();
+  const session = await requireMinRole(UserRole.ADMIN);
 
   const users = await prisma.user.findMany({
     select: {
@@ -30,7 +32,7 @@ export default async function UsersPage() {
         </div>
         <CreateUserDialog />
       </div>
-      <UsersTable data={users} />
+      <DataTable columns={columns} data={users} />
     </div>
   );
 }

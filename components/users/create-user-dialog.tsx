@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -7,24 +10,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { FormRenderer } from "@/components/form-renderer";
+import { Plus } from "lucide-react";
 
-/**
- * TODO: Migrate to new form system using FormRenderer
- * This is a placeholder until the create-user form is properly set up
- */
 export function CreateUserDialog() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button>Create User</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Create User
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Create New User</AlertDialogTitle>
           <AlertDialogDescription>
-            This feature is being migrated to the new form system.
+            Add a new user to the system. A temporary password will be generated.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <FormRenderer
+          formId="create-user"
+          submitButtonText="Create User"
+          onSuccess={(result) => {
+            setOpen(false);
+          }}
+        />
       </AlertDialogContent>
     </AlertDialog>
   );

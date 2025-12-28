@@ -1,14 +1,40 @@
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth-helpers";
+import { requireMinRole } from "@/lib/auth-helpers";
+import { UserRole, getCreatableRoles } from "@/lib/constants/roles";
 import bcrypt from "bcryptjs";
 import { formDataToObject } from "@/lib/forms/core/helpers";
+import { revalidatePath } from "next/cache";
 
 export async function action(formData: FormData | Record<string, unknown>) {
   const data = formData instanceof FormData ? formDataToObject(formData) : formData;
 
   try {
-    // Require authentication
-    await requireAuth();
+    // Require at least Admin role
+    const session = await requireMinRole(UserRole.ADMIN, false);
+
+    if (!session) {
+      return {
+        status: "fail" as const,
+        alert: {
+          variant: "destructive" as const,
+          title: "Unauthorized",
+          description: "You don't have permission to create users.",
+        },
+      };
+    }
+
+    // Check if the user can create this role
+    const creatableRoles = getCreatableRoles(session.user.role as UserRole);
+    if (!creatableRoles.includes(data.role as UserRole)) {
+      return {
+        status: "fail" as const,
+        alert: {
+          variant: "destructive" as const,
+          title: "Insufficient permissions",
+          description: `You cannot create users with the ${data.role} role.`,
+        },
+      };
+    }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -17,8 +43,10 @@ export async function action(formData: FormData | Record<string, unknown>) {
 
     if (existingUser) {
       return {
-        status: "error" as const,
-        errors: { email: "A user with this email already exists" },
+        status: "fail" as const,
+        fieldErrors: {
+          email: "A user with this email already exists",
+        },
       };
     }
 
@@ -27,33 +55,34 @@ export async function action(formData: FormData | Record<string, unknown>) {
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
     // Create the user
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
+        name: data.name as string,
         email: data.email as string,
-        role: data.role as "ADMIN" | "FRONT_DESK" | "HOUSEKEEPING",
+        role: data.role as UserRole,
         password: hashedPassword,
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        createdAt: true,
       },
     });
 
+    revalidatePath("/users");
+
     return {
       status: "success" as const,
-      data: {
-        user,
-        tempPassword, // In production, this should be sent via email instead
-        message: `User created successfully. Temporary password: ${tempPassword}`,
+      alert: {
+        variant: "success" as const,
+        title: "User created",
+        description: `User created successfully. Temporary password: ${tempPassword}`,
       },
     };
   } catch (error) {
     console.error("Error creating user:", error);
     return {
-      status: "error" as const,
-      errors: { _form: "Failed to create user. Please try again." },
+      status: "fail" as const,
+      alert: {
+        variant: "destructive" as const,
+        title: "Error",
+        description: "Failed to create user. Please try again.",
+      },
     };
   }
 }
