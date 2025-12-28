@@ -8,6 +8,7 @@ import {
     BreadcrumbList, BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 export default async function DashboardLayout({
     children,
@@ -19,7 +20,7 @@ export default async function DashboardLayout({
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2">
+                <header className="flex h-[50px] shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator
@@ -41,9 +42,12 @@ export default async function DashboardLayout({
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 
-                </div>
+                <ScrollArea className="h-[calc(100vh-50px)]">
+                    <div className="p-4">
+                        {children}
+                    </div>
+                </ScrollArea>
             </SidebarInset>
         </SidebarProvider>
     )
