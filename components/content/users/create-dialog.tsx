@@ -34,7 +34,7 @@ export function CreateUserDialog() {
         <FormRenderer
           formId="create-user"
           submitButtonText="Create User"
-          onSuccess={(result) => {
+          onSuccess={() => {
             setOpen(false);
           }}
         />

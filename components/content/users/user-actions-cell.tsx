@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DeleteUserDialog } from "./delete-user-dialog";
+import { DeleteContentDialog } from "@/components/delete-content-dialog";
 import type { User } from "./columns";
 
 interface UserActionsCellProps {
@@ -48,9 +48,10 @@ export function UserActionsCell({ user }: UserActionsCellProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DeleteUserDialog
-        userId={user.id}
-        userEmail={user.email}
+      <DeleteContentDialog
+        contentType="users"
+        itemId={user.id}
+        itemLabel={user.email}
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
       />
