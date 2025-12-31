@@ -19,12 +19,8 @@ export type UserListItem = {
   createdAt: Date;
 };
 
-// Type for create user result data
-export type CreateUserData = {
-  tempPassword: string;
-};
 
-export const usersActions: ContentActions<UserListItem, CreateUserData> = {
+export const usersActions: ContentActions<UserListItem> = {
   /**
    * Get paginated list of users with optional search
    */
@@ -66,9 +62,7 @@ export const usersActions: ContentActions<UserListItem, CreateUserData> = {
   /**
    * Create a new user
    */
-  create: async (
-    data: Record<string, unknown>
-  ): Promise<CrudResult<CreateUserData>> => {
+  create: async (data: Record<string, unknown>): Promise<CrudResult> => {
     const session = await requireMinRole(UserRole.ADMIN, false);
 
     if (!session) {
@@ -96,11 +90,7 @@ export const usersActions: ContentActions<UserListItem, CreateUserData> = {
     }
 
     try {
-      // Generate a temporary password
-      const tempPassword =
-        Math.random().toString(36).slice(-12) +
-        Math.random().toString(36).slice(-12);
-      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+      const hashedPassword = await bcrypt.hash(data.password as string, 10);
 
       await prisma.user.create({
         data: {
@@ -113,10 +103,7 @@ export const usersActions: ContentActions<UserListItem, CreateUserData> = {
 
       revalidatePath("/users");
 
-      return {
-        success: true,
-        data: { tempPassword },
-      };
+      return { success: true };
     } catch (error) {
       console.error("Error creating user:", error);
       return {

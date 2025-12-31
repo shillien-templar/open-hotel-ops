@@ -28,14 +28,15 @@ export function CreateUserDialog() {
         <AlertDialogHeader>
           <AlertDialogTitle>Create New User</AlertDialogTitle>
           <AlertDialogDescription>
-            Add a new user to the system. A temporary password will be generated.
+            Add a new user to the system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <FormRenderer
           formId="create-user"
           submitButtonText="Create User"
+          onCancel={() => setOpen(false)}
           onSuccess={() => {
-            setOpen(false);
+            setTimeout(() => setOpen(false), 2000);
           }}
         />
       </AlertDialogContent>

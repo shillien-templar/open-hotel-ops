@@ -16,13 +16,15 @@ interface FormRendererProps {
   onSuccess?: (result: any) => void;
   onError?: (result: any) => void;
   submitButtonText?: string;
+  onCancel?: () => void;
 }
 
 export function FormRenderer({
   formId,
   onSuccess,
   onError,
-  submitButtonText = "Submit"
+  submitButtonText = "Submit",
+  onCancel,
 }: FormRendererProps) {
   const [alert, setAlert] = useState<Alert | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -122,14 +124,26 @@ export function FormRenderer({
           {/* Form-specific fields */}
           <FormFieldsComponent form={form} />
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={form.formState.isSubmitting}
-          >
-            {form.formState.isSubmitting ? "Submitting..." : submitButtonText}
-          </Button>
+          {/* Form Actions */}
+          <div className={onCancel ? "flex gap-2 justify-end" : ""}>
+            {onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={form.formState.isSubmitting}
+              >
+                Cancel
+              </Button>
+            )}
+            <Button
+              type="submit"
+              className={onCancel ? "" : "w-full"}
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? "Submitting..." : submitButtonText}
+            </Button>
+          </div>
         </>
       )}
     </form>

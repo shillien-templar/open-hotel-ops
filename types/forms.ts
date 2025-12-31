@@ -8,6 +8,7 @@ import type { Alert } from '@/lib/types/alert'
 export type FieldType =
   | 'text'
   | 'password'
+  | 'password-generate'
   | 'textarea'
   | 'number'
   | 'select'
@@ -76,7 +77,7 @@ export interface NumberFieldConfig extends BaseFieldConfig {
  * For text inputs, password inputs, and textareas
  */
 export interface TextFieldConfig extends BaseFieldConfig {
-  type: 'text' | 'password' | 'textarea'
+  type: 'text' | 'password' | 'password-generate' | 'textarea'
   minLength?: number
   maxLength?: number
 }

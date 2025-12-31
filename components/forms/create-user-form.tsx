@@ -25,6 +25,12 @@ export function CreateUserFormFields({ form }: { form: UseFormReturn<any> }) {
         form={form}
       />
       <FieldRenderer
+        name="password"
+        id="password"
+        fieldConfig={config.fields.password}
+        form={form}
+      />
+      <FieldRenderer
         name="role"
         id="role"
         fieldConfig={config.fields.role}

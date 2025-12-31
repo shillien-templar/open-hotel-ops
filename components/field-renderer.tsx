@@ -4,6 +4,8 @@ import {Controller} from 'react-hook-form'
 import {Field, FieldLabel, FieldDescription, FieldError} from '@/components/ui/field'
 import {Input} from '@/components/ui/input'
 import {Textarea} from '@/components/ui/textarea'
+import {Button} from '@/components/ui/button'
+import {Wand2} from 'lucide-react'
 import {
     Select,
     SelectContent,
@@ -11,6 +13,15 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
+
+function generatePassword(): string {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
+    let password = ''
+    for (let i = 0; i < 16; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return password
+}
 
 interface FieldRendererProps {
     name: string
@@ -75,6 +86,30 @@ function renderFieldControl(
                     type="password"
                     placeholder={fieldConfig.placeholder}
                 />
+            )
+
+        case 'password-generate':
+            return (
+                <div className="flex gap-2">
+                    <Input
+                        {...field}
+                        value={field.value as string}
+                        id={id}
+                        aria-invalid={fieldState.invalid}
+                        type="text"
+                        placeholder={fieldConfig.placeholder}
+                        className="flex-1"
+                    />
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => field.onChange(generatePassword())}
+                        title="Generate password"
+                    >
+                        <Wand2 className="h-4 w-4" />
+                    </Button>
+                </div>
             )
 
         case 'textarea':

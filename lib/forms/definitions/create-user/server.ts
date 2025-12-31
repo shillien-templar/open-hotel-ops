@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import type { FieldDataValidation } from "@/types/forms";
 import { formDataToObject } from "@/lib/forms/core/helpers";
 import { usersActions } from "@/lib/content/users/actions";
-import type { CreateUserData } from "@/lib/content/users/actions";
 
 /**
  * Server-side data validation for create-user form
@@ -32,13 +31,12 @@ export async function action(formData: FormData | Record<string, unknown>) {
   const result = await usersActions.create(data);
 
   if (result.success) {
-    const { tempPassword } = result.data as CreateUserData;
     return {
       status: "success" as const,
       alert: {
         variant: "success" as const,
         title: "User created",
-        description: `User created successfully. Temporary password: ${tempPassword}`,
+        description: "User created successfully.",
       },
     };
   } else {
