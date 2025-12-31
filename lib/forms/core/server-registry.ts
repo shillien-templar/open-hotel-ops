@@ -1,6 +1,5 @@
 import { dataValidation as setupDataValidation, action as setupAction } from "../definitions/setup/server";
-import { action as createUserAction } from "../definitions/create-user/action";
-import type { FieldDataValidation } from "@/types/forms";
+import { dataValidation as createUserDataValidation, action as createUserAction } from "../definitions/create-user/server";
 
 /**
  * Server-only registry for form data validation and actions
@@ -12,7 +11,7 @@ export const serverRegistry = {
     action: setupAction,
   },
   "create-user": {
-    dataValidation: {} as Record<string, FieldDataValidation>,
+    dataValidation: createUserDataValidation,
     action: createUserAction,
   },
 } as const;

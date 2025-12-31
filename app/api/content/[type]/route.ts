@@ -3,7 +3,19 @@ import { isValidContentType, getContentAction } from "@/lib/content/registry";
 import type {
   ContentListResponse,
   ContentMutationResponse,
+  CrudResult,
 } from "@/lib/content/types";
+
+/**
+ * Transform CrudResult to ContentMutationResponse
+ */
+function toMutationResponse(result: CrudResult): ContentMutationResponse {
+  if (result.success) {
+    return { status: "success" };
+  } else {
+    return { status: "fail", error: result.error };
+  }
+}
 
 /**
  * GET - List content with pagination and search
@@ -85,9 +97,10 @@ export async function POST(
     // Get and execute the handler
     const handler = getContentAction(type, "create");
     const result = await handler(data);
+    const response = toMutationResponse(result);
 
-    return NextResponse.json(result satisfies ContentMutationResponse, {
-      status: result.status === "success" ? 201 : 400,
+    return NextResponse.json(response, {
+      status: result.success ? 201 : 400,
     });
   } catch (error) {
     console.error("Content API POST error:", error);
@@ -138,9 +151,10 @@ export async function PATCH(
     // Get and execute the handler
     const handler = getContentAction(type, "update");
     const result = await handler(id, data);
+    const response = toMutationResponse(result);
 
-    return NextResponse.json(result satisfies ContentMutationResponse, {
-      status: result.status === "success" ? 200 : 400,
+    return NextResponse.json(response, {
+      status: result.success ? 200 : 400,
     });
   } catch (error) {
     console.error("Content API PATCH error:", error);
@@ -191,9 +205,10 @@ export async function DELETE(
     // Get and execute the handler
     const handler = getContentAction(type, "delete");
     const result = await handler(id);
+    const response = toMutationResponse(result);
 
-    return NextResponse.json(result satisfies ContentMutationResponse, {
-      status: result.status === "success" ? 200 : 400,
+    return NextResponse.json(response, {
+      status: result.success ? 200 : 400,
     });
   } catch (error) {
     console.error("Content API DELETE error:", error);

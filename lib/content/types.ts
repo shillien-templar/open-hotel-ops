@@ -1,5 +1,3 @@
-import { Alert } from "@/lib/types/alert";
-
 // Supported content types
 export type ContentType = "users";
 
@@ -19,36 +17,66 @@ export interface GetContentResult<T> {
   total: number;
 }
 
-// Standard action result
-export interface ActionResult {
-  status: "success" | "fail";
-  alert?: Alert;
-  fieldErrors?: Record<string, string>;
+// ============================================
+// CRUD Action Return Types (minimal, no alerts)
+// ============================================
+
+// Error codes for CRUD actions
+export type CrudErrorCode =
+  | "UNAUTHORIZED"
+  | "PERMISSION_DENIED"
+  | "NOT_FOUND"
+  | "SERVER_ERROR";
+
+// CRUD error structure
+export interface CrudError {
+  code: CrudErrorCode;
+  title: string;
+  description?: string;
 }
+
+// CRUD action result - success
+export interface CrudSuccess<T = void> {
+  success: true;
+  data?: T;
+}
+
+// CRUD action result - failure
+export interface CrudFailure {
+  success: false;
+  error: CrudError;
+}
+
+// Combined CRUD result type
+export type CrudResult<T = void> = CrudSuccess<T> | CrudFailure;
 
 // Action handler signatures
 export type GetHandler<T = unknown> = (
   params: GetContentParams
 ) => Promise<GetContentResult<T>>;
 
-export type CreateHandler = (
+export type CreateHandler<T = void> = (
   data: Record<string, unknown>
-) => Promise<ActionResult>;
+) => Promise<CrudResult<T>>;
 
 export type UpdateHandler = (
   id: string,
   data: Record<string, unknown>
-) => Promise<ActionResult>;
+) => Promise<CrudResult>;
 
-export type DeleteHandler = (id: string) => Promise<ActionResult>;
+export type DeleteHandler = (id: string) => Promise<CrudResult>;
 
 // Content actions config for a content type
-export interface ContentActions<T = unknown> {
-  get: GetHandler<T>;
-  create: CreateHandler;
+export interface ContentActions<TList = unknown, TCreate = void> {
+  get: GetHandler<TList>;
+  create: CreateHandler<TCreate>;
   update: UpdateHandler;
   delete: DeleteHandler;
 }
+
+// ============================================
+// API Response Types (for REST endpoints)
+// ============================================
 
 // API response format for GET (list) requests
 export interface ContentListResponse<T> {
@@ -65,7 +93,7 @@ export interface ContentListResponse<T> {
 // API response format for mutation requests (POST, PATCH, DELETE)
 export interface ContentMutationResponse {
   status: "success" | "fail";
-  alert?: Alert;
+  error?: CrudError;
   fieldErrors?: Record<string, string>;
   errors?: Record<number, string>;
 }

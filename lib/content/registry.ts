@@ -12,7 +12,7 @@ import { usersActions } from "./users/actions";
 /**
  * Registry mapping content types to their action handlers
  */
-const contentRegistry: Record<ContentType, ContentActions<unknown>> = {
+const contentRegistry: Record<ContentType, ContentActions<unknown, unknown>> = {
   users: usersActions,
 };
 
@@ -28,7 +28,7 @@ export function isValidContentType(type: string): type is ContentType {
  */
 export function getContentActions(
   type: ContentType
-): ContentActions<unknown> | null {
+): ContentActions<unknown, unknown> | null {
   return contentRegistry[type] ?? null;
 }
 

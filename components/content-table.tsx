@@ -107,7 +107,14 @@ export function ContentTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {/* Header: Search, Refresh, Page Size */}
+      {/* Action Bar */}
+      {headerActions && (
+        <div className="flex items-center justify-end">
+          {headerActions}
+        </div>
+      )}
+
+      {/* Filter Bar: Search, Page Size, Refresh */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 flex-1">
           <div className="relative flex-1 max-w-sm">
@@ -126,8 +133,6 @@ export function ContentTable<TData, TValue>({
         </div>
 
         <div className="flex items-center gap-2">
-          {headerActions}
-
           <Select
             value={pagination.pageSize.toString()}
             onValueChange={(value) => {
@@ -162,7 +167,7 @@ export function ContentTable<TData, TValue>({
       {/* Table */}
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

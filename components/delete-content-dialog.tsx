@@ -48,14 +48,14 @@ export function DeleteContentDialog({
       const result = await response.json();
 
       if (result.status === "success") {
-        toast.success(result.alert?.title ?? "Deleted", {
-          description: result.alert?.description,
+        toast.success("Deleted", {
+          description: `${itemLabel} has been deleted.`,
         });
         onOpenChange(false);
         router.refresh();
       } else {
-        toast.error(result.alert?.title ?? "Error", {
-          description: result.alert?.description ?? "Failed to delete item.",
+        toast.error(result.error?.title ?? "Error", {
+          description: result.error?.description ?? "Failed to delete item.",
         });
       }
     } catch (error) {
