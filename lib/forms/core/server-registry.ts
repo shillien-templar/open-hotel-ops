@@ -1,5 +1,6 @@
 import { dataValidation as setupDataValidation, action as setupAction } from "../definitions/setup/server";
 import { dataValidation as createUserDataValidation, action as createUserAction } from "../definitions/create-user/server";
+import { dataValidation as editUserDataValidation, action as editUserAction } from "../definitions/edit-user/server";
 
 /**
  * Server-only registry for form data validation and actions
@@ -13,6 +14,10 @@ export const serverRegistry = {
   "create-user": {
     dataValidation: createUserDataValidation,
     action: createUserAction,
+  },
+  "edit-user": {
+    dataValidation: editUserDataValidation,
+    action: editUserAction,
   },
 } as const;
 

@@ -17,6 +17,7 @@ interface FormRendererProps {
   onError?: (result: any) => void;
   submitButtonText?: string;
   onCancel?: () => void;
+  defaultValues?: Record<string, unknown>;
 }
 
 export function FormRenderer({
@@ -25,6 +26,7 @@ export function FormRenderer({
   onError,
   submitButtonText = "Submit",
   onCancel,
+  defaultValues: propDefaultValues,
 }: FormRendererProps) {
   const [alert, setAlert] = useState<Alert | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -51,9 +53,9 @@ export function FormRenderer({
     );
   }
 
-  // Set up default values from field configs
+  // Set up default values from field configs, then override with prop values
   const defaultValues = Object.entries(config.fields).reduce((acc, [fieldName, fieldConfig]) => {
-    acc[fieldName] = fieldConfig.defaultValue;
+    acc[fieldName] = propDefaultValues?.[fieldName] ?? fieldConfig.defaultValue;
     return acc;
   }, {} as Record<string, unknown>);
 

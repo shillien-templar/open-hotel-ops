@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteContentDialog } from "@/components/delete-content-dialog";
+import { useEditUserDialog } from "./edit-user-dialog-provider";
 import type { User } from "./columns";
 
 interface UserActionsCellProps {
@@ -20,6 +21,7 @@ interface UserActionsCellProps {
 
 export function UserActionsCell({ user }: UserActionsCellProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { openEditUserDialog } = useEditUserDialog();
 
   return (
     <>
@@ -38,7 +40,9 @@ export function UserActionsCell({ user }: UserActionsCellProps) {
             Copy user ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Edit user</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => openEditUserDialog(user)}>
+            Edit user
+          </DropdownMenuItem>
           <DropdownMenuItem
             className="text-destructive"
             onClick={() => setDeleteDialogOpen(true)}
